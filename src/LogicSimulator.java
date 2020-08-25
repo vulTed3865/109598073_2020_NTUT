@@ -19,22 +19,22 @@ public class LogicSimulator {
 		oPins = new Vector<>();
 	}
 
-	public boolean load(String Filepath) {
-		File file = new File(Filepath);
-//    	ArrayList<Integer> list = new ArrayList<Integer>();
-		try {
-			if (file.isFile() && file.exists()) {
-				return true;
-
-			} else {
-				System.out.println("load file fail");
-				return false;
-			}
-
-		} catch (Exception e) {
-			System.out.println(e);
-			return false;
-		}
+//	public boolean load(String Filepath) {
+//		File file = new File(Filepath);
+////    	ArrayList<Integer> list = new ArrayList<Integer>();
+//		try {
+//			if (file.isFile() && file.exists()) {
+//				return true;
+//
+//			} else {
+//				System.out.println("load file fail");
+//				return false;
+//			}
+//
+//		} catch (Exception e) {
+//			System.out.println(e);
+//			return false;
+//		}
 
 //		  InputStreamReader read = new InputStreamReader(new FileInputStream(file));
 //      BufferedReader bufferedReader = new BufferedReader(read);
@@ -48,17 +48,14 @@ public class LogicSimulator {
 //      read.close();
 		// https://www.cnblogs.com/0201zcr/p/5009975.html
 
-	}
+//	}
 
-	public boolean parseLoadData(String Filepath) {
+	public boolean load(String Filepath) {
 		File file = new File(Filepath);
 		ArrayList<String> list = new ArrayList<String>();
 		String[] words = null;
 		int linecount = 0;
-		int CountGateNOT = 0;
-		int CountGateOR = 0;
-		int CountGateAND = 0;
-
+		int CountGate = 0;
 		// load and read file data
 		try {
 			if (file.isFile() && file.exists()) {
@@ -90,106 +87,84 @@ public class LogicSimulator {
 			}
 		}
 		
+		
 		for (int i = 2; i < linecount; i++) {
 			
 			words = list.get(i).split(" ");
-			Device device = new Device();
+			
 			for (int j = 0; j < words.length; j++) {
 				// parse the gatetype
+				Device device = new Device();
 				if (j == 0) {
 					
 					switch (words[0]) {
-					case "1":
-					device = new gateAND();
-						CountGateAND++;
-						break;
-					case "2":
-					device = new gateAND();
-						CountGateOR++;
-						break;
-					case "3":
-					device = new gateNOT();
-						CountGateNOT++;
-						break;
+						case "1": //AND gate
+						device = new gateAND();
+						circuits.add(device);
+						CountGate ++;
+							break;
+							
+						case "2": //OR gate
+						device = new gateOR();
+						circuits.add(device);
+						CountGate ++;
+							break;
+						
+						case "3": //NOT¡@gate
+						device = new gateNOT();
+						circuits.add(device);
+						CountGate ++;
+							break;
 					}
 
 				} 
-				else {
+				
+			}
+			
+		}
+//		System.out.println("circuit size():" + circuits.size() + "CountGate:" + CountGate);
+		
+		
+		for (int i = 2; i < linecount; i++) {
+			
+			words = list.get(i).split(" ");
+			
+			for (int j = 1; j < words.length; j++) {
+			
 					System.out.println(words[j]);
+
 					if (words[j].equals("0")) {
-						System.out.println("get 0 gonextline");
+						System.out.println("get 0 go nextline");
 						continue;
 					}
 
 					// parse the digit type
 					// negative / float /
+					
 					if (words[j].indexOf('.') == -1) {
 						if (words[j].indexOf('-') != -1) { 
 							//negative
- 							System.out.println("get negative : " + words[j]);
- 							device.addinputpin(iPins.get(Math.abs(Integer.parseInt(words[j]))));
+ 							System.out.println("get negative : " + words[j] + " j:" + j);
+ 							System.out.println("circuit size():" + circuits.size() + "CountGate:" + CountGate);
+ 							int fromipinnum = (int) Integer.parseInt(words[j]);
+ 							System.out.println("fromipinnum:" + Math.abs(fromipinnum));
  							
- 							
+ 							circuits.get(j-1).addInputPin(iPins.get(Math.abs(fromipinnum) -1 ));
  							
 						}
-					} else {
+					} 
+					else {
 						System.out.println("get float : " + words[j]);
+						float fromgatenumber = (float) Float.parseFloat(words[j]);
+						circuits.get(j-1).addInputPin(circuits.get((int)fromgatenumber-1)); //add other gate as input
 					}
-				}
+			
 
 			}
-
+			
 		}
-		System.out.println(" linecount:" + linecount);
 
-//		
-//		//read the first line >>get input pins number
-//		if (Integer.parseInt(list.get(0) )> 0) {
-//			for (int i = 0; i < Integer.parseInt(list.get(0); i++) {
-//				IPin iPin = new IPin();
-//				iPins.add(iPin);
-//			}
-//		}
-//
-//		
-//		
-//		
-//		int gatecount = Integer.parseInt(list.get(1) ); //gate number
-//
-//		
-//		//for
-//		
-//			for (int i = 0;  i < list.get(2).length() ; i ++) {
-//				Scanner sc= new Scanner(list.get(2));  //System.in is a standard input stream  
-//				String str= sc.next();   //reads string before the space  
-//				if(i==0) {
-//					switch(str){
-//						case "1":
-//							System.out.println("get gateAND");
-//							break;
-//						case "2":
-//							System.out.println("get gateOR");
-//							break;
-//						case "3":
-//							System.out.println("get gateNOT");
-//							break;
-//					}
-//					
-//				}
-//				
-//				if(str.equals(" "));
-//					continue;
-//				if(str.equals("0"));
-//					break;
-//				
-//				
-//			}
-//	
-//		
-//		
-//		oPins.addInputPin(circuit.get(gatecount).);
-
-		return false;
+		return true;
 	}
 
 	public String getSimulationResult(Vector<Boolean> inputValues) {
