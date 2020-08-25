@@ -20,7 +20,7 @@ public class LogicSimulatorTest {
 	@Test
 	public void testLoad() {
 		LogicSimulator logicSimulator = new LogicSimulator();
-		assertEquals(true, logicSimulator.load(file1Path));
+		assertEquals(true, logicSimulator.parseLoadData(file1Path));
 	}
 	
 	@Test
@@ -39,7 +39,7 @@ public class LogicSimulatorTest {
 	                 "i i i | o\n" +
 	                 "1 2 3 | 1\n" +
 	                 "------+--\n" +
-	                 "0 1 1 | 0\n", logicSimulator.getSimulationResult(inputValues));
+	                 "0 1 1 | 1\n", logicSimulator.getSimulationResult(inputValues));
 	}
 
 }
