@@ -208,7 +208,69 @@ public class LogicSimulator {
 
 	public String getTruthTable() {
 		String Table = "";
+		Vector<Boolean> inputValues = new Vector<Boolean>();
+	
+		//head
+		//line1
+		Table += "Truth table:\n" ;
+		for (int i = 0; i < iPins.size(); i++) {
+			Table += "i " ;
+		}
+		Table += "| " ;
+		for (int i = 0; i < oPins.size(); i++) {
+			Table += "o " ;
+		}
+		Table += "\n" ;
+		
+		//line2
+		for (int i=0; i<iPins.size(); i++)
+        {
+			Table += (i + 1) + " " ;
+        }
+		Table += "| " ;
 
+
+        for (int i=0; i<oPins.size(); i++)
+        {
+        	Table +=i+1;
+        }
+        Table +="\n";
+		
+		//line3
+        for (int i=0; i<iPins.size(); i++)
+        {
+			Table += "--" ;
+        }
+        Table +="+";
+        for (int i=0; i<oPins.size(); i++)
+        {
+        	Table +="--";
+        }
+        Table +="\n";
+        
+		//body
+		
+		
+		
+//		for (int i = 0; i < inputValues.size(); i++) {
+//			iPins.get(i).setInput(inputValues.get(i));
+//		}
+		    
+		
+//		assertEquals("Truth table:\n" +
+//                "i i i | o\n" +
+//                "1 2 3 | 1\n" +
+//                "------+--\n" +
+//                "0 0 0 | 0\n" +
+//                "0 0 1 | 0\n" +
+//                "0 1 0 | 0\n" +
+//                "0 1 1 | 0\n" +
+//                "1 0 0 | 1\n" +
+//                "1 0 1 | 1\n" +
+//                "1 1 0 | 0\n" +
+//                "1 1 1 | 0\n", logicSimulator.getTruthTable());
+		
+		
 		return Table;
 	}
 }
