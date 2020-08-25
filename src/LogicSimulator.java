@@ -12,11 +12,13 @@ public class LogicSimulator {
 	private Vector<Device> circuits;
 	private Vector<Device> iPins;
 	private Vector<Device> oPins;
-
+	private Vector<String> OutputCandidate;
+	
 	public LogicSimulator() {
 		circuits = new Vector<>();
 		iPins = new Vector<>();
 		oPins = new Vector<>();
+		OutputCandidate = new Vector<>();
 	}
 
 //	public boolean load(String Filepath) {
@@ -87,13 +89,24 @@ public class LogicSimulator {
 			}
 		}
 		
+		if (Integer.parseInt(list.get(1)) > 0) {
+			for (int i = 0; i < Integer.parseInt(list.get(1)); i++) {
+				String Outputlist = "" + (i+1) ;
+				OutputCandidate.add(Outputlist);
+			}
+		}
 		
+		System.out.println("show OC :" + OutputCandidate.get(0));
+		System.out.println("show OC :" + OutputCandidate.get(1));
+		System.out.println("show OC :" + OutputCandidate.get(2));
+
+		// parse the gatetype and generate the gate in circuit
 		for (int i = 2; i < linecount; i++) {
 			
 			words = list.get(i).split(" ");
 			
 			for (int j = 0; j < words.length; j++) {
-				// parse the gatetype
+				
 				Device device = new Device();
 				if (j == 0) {
 					
@@ -124,7 +137,7 @@ public class LogicSimulator {
 		}
 //		System.out.println("circuit size():" + circuits.size() + "CountGate:" + CountGate);
 		
-		
+		//parse the file data and define the pin
 		for (int i = 2; i < linecount; i++) {
 			
 			words = list.get(i).split(" ");
@@ -148,22 +161,47 @@ public class LogicSimulator {
  							System.out.println("circuit size():" + circuits.size() + "CountGate:" + CountGate);
  							int fromipinnum = (int) Integer.parseInt(words[j]);
  							System.out.println("fromipinnum:" + Math.abs(fromipinnum));
- 							
- 							circuits.get(j-1).addInputPin(iPins.get(Math.abs(fromipinnum) -1 ));
+ 							int Ipinindex = Math.abs(fromipinnum) -1;
+ 							circuits.get(j-1).addInputPin(iPins.get(Ipinindex));
  							
 						}
 					} 
 					else {
 						System.out.println("get float : " + words[j]);
 						float fromgatenumber = (float) Float.parseFloat(words[j]);
-						circuits.get(j-1).addInputPin(circuits.get((int)fromgatenumber-1)); //add other gate as input
+						int fromGN = (int)fromgatenumber-1;
+						circuits.get(j-1).addInputPin(circuits.get(fromGN)); //add other gate as input
+						
+						String gateberemove = (int)fromgatenumber + "";
+						
+						boolean found = OutputCandidate.contains(gateberemove);
+						
+						System.out.println("OutputCandidatesize : " + OutputCandidate.size() );
+						System.out.println("found : " + found + " gateberemove : " +gateberemove );
+						if(found)
+							OutputCandidate.remove(gateberemove);
+						
+						
+						for(int k = 0 ; k < OutputCandidate.size();k++) {
+							System.out.println("");
+							System.out.println("the OC " + k + " ");
+							System.out.println(OutputCandidate.get(k));
+							System.out.println("");
+						}
+						
+						System.out.println("");
+						
 					}
 			
 
 			}
 			
 		}
-
+		int outputgate = Integer.parseInt(OutputCandidate.get(0));
+		System.out.println("outputgate : " + OutputCandidate.get(0));
+		oPins.add(new OPin());
+		oPins.get(0).addInputPin(circuits.get(outputgate-1));
+//		 
 		return true;
 	}
 
@@ -179,9 +217,11 @@ public class LogicSimulator {
 			result += inputValues.get(i);
 			result += " ";
 		}
-
-//		result +="|" + oPins.getOutput() + "\n";
-
+		
+		
+		
+		result = result + "|" + oPins.get(0).getOutput() + "\n";
+//		System.out.println("result :"+ result);
 		String resultgraph = "Simulation Result:\n" + "i i i | o\n" + "1 2 3 | 1\n" + "------+--\n" + result;
 
 		return result;
