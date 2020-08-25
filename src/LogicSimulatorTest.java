@@ -17,12 +17,6 @@ public class LogicSimulatorTest {
 	    file2Path = "src/File2.lcf";
 	}
 	
-//	@Test
-//	public void testLoad() {
-//		LogicSimulator logicSimulator = new LogicSimulator();
-//		assertEquals(true, logicSimulator.load(file1Path));
-//	}
-//	
 	@Test
 	public void testGetSimulationResult()
 	{

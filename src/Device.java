@@ -9,6 +9,7 @@ public class Device {
 		IPins = new Vector<>();
     }
 	public void addInputPin(Device Inputpin) {
+//		System.out.println(" addInputPin  : " + Inputpin);
 		this.IPins.add(Inputpin);
 	}
 	public void setInput(boolean Inputvalue)  {
