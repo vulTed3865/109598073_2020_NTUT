@@ -218,7 +218,7 @@ public class LogicSimulator {
 		}
 		Table += "| " ;
 		for (int i = 0; i < oPins.size(); i++) {
-			Table += "o " ;
+			Table += "o" ;
 		}
 		Table += "\n" ;
 		
@@ -249,12 +249,39 @@ public class LogicSimulator {
         Table +="\n";
         
 		//body
+        
+        
+        int rows = (int) Math.pow(2,iPins.size());
 		
-		
-		
-//		for (int i = 0; i < inputValues.size(); i++) {
-//			iPins.get(i).setInput(inputValues.get(i));
-//		}
+        for (int i=0; i<rows; i++) {
+        	int currentipin = 0;
+            for (int j=iPins.size()-1; j>=0; j--) {
+            	int truthvalue = i/(int) Math.pow(2, j)%2;
+            	
+            	
+            	//set input value to iPins.ipin
+    			if(truthvalue == 1 )
+    				iPins.get(currentipin).setInput(true);
+    			else if (truthvalue == 0 )
+    				iPins.get(currentipin).setInput(false);
+    			//¤Ï¦V¤F
+    			Table += truthvalue + " ";
+    			System.out.println("currentipin : "+currentipin);
+    			currentipin++;
+    			
+            }
+            Table +="| ";
+            
+            //insert output value
+            if(oPins.get(0).getOutput()) {
+            	Table +=  1  + "\n";
+    		}
+    		else {
+    			Table +=  0  + "\n";
+    		}
+
+        }
+        System.out.println(Table);
 		    
 		
 //		assertEquals("Truth table:\n" +
