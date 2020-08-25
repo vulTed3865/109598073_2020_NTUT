@@ -138,18 +138,17 @@ public class LogicSimulator {
 		}
 		
 		int outputgate = Integer.parseInt(OutputCandidate.get(0));
-//		System.out.println("circuits size : " + circuits.size());
-//		System.out.println("circuits 0 : " + circuits.get(0));
-//		System.out.println("circuits 1 : " + circuits.get(1));
-//		System.out.println("circuits 2 : " + circuits.get(2));
-//		System.out.println("outputgate : " + OutputCandidate.get(0));
+		int OutputCandidatenumber = OutputCandidate.size();
 		
-
-		OPin output  = new OPin();
-		oPins.add(output);
-		oPins.get(0).addInputPin(circuits.get(outputgate-1));
-		System.out.println("circuits n : " + circuits.get(outputgate-1));
-		System.out.println("oPins 0 : " + oPins.get(0));
+		createOPins(OutputCandidatenumber);
+		setOPins(OutputCandidate);
+		
+		
+//		OPin output  = new OPin();
+//		oPins.add(output);
+//		oPins.get(0).addInputPin(circuits.get(outputgate-1));
+//		System.out.println("circuits n : " + circuits.get(outputgate-1));
+//		System.out.println("oPins 0 : " + oPins.get(0));
 		
 //		 
 		return true;
@@ -160,6 +159,22 @@ public class LogicSimulator {
 			IPin iPin = new IPin();
 			iPins.add(iPin);
 		}
+	}
+	private void createOPins(int opins) {
+		for (int i = 0; i < opins; i++) {
+			OPin oPin = new OPin();
+			oPins.add(oPin);
+		}
+	}
+	private void setOPins(Vector<String> OutputCandidate) {
+		
+		for (int i = 0; i < OutputCandidate.size(); i++) {
+			int outputgate = Integer.parseInt(OutputCandidate.get(i));
+			oPins.get(i).addInputPin(circuits.get(outputgate-1));
+		}
+		
+		
+		
 	}
 	private void createOutputCandidates(int gates) {
 		for (int i = 0; i < gates; i++) {
@@ -208,16 +223,15 @@ public class LogicSimulator {
 
 	public String getTruthTable() {
 		String Table = "";
-		Vector<Boolean> inputValues = new Vector<Boolean>();
-	
 		//head
 		//line1
 		Table += "Truth table:\n" ;
 		for (int i = 0; i < iPins.size(); i++) {
 			Table += "i " ;
 		}
-		Table += "| " ;
+		Table += "|" ;
 		for (int i = 0; i < oPins.size(); i++) {
+			Table += " " ;
 			Table += "o" ;
 		}
 		Table += "\n" ;
@@ -227,12 +241,13 @@ public class LogicSimulator {
         {
 			Table += (i + 1) + " " ;
         }
-		Table += "| " ;
+		Table += "|" ;
 
-
+		System.out.println(oPins.size());
         for (int i=0; i<oPins.size(); i++)
         {
-        	Table +=i+1;
+        	Table += " ";
+        	Table +=i+1 ;
         }
         Table +="\n";
 		
@@ -257,28 +272,33 @@ public class LogicSimulator {
         	int currentipin = 0;
             for (int j=iPins.size()-1; j>=0; j--) {
             	int truthvalue = i/(int) Math.pow(2, j)%2;
-            	
-            	
+
             	//set input value to iPins.ipin
     			if(truthvalue == 1 )
     				iPins.get(currentipin).setInput(true);
     			else if (truthvalue == 0 )
     				iPins.get(currentipin).setInput(false);
-    			//¤Ï¦V¤F
     			Table += truthvalue + " ";
     			System.out.println("currentipin : "+currentipin);
     			currentipin++;
     			
             }
-            Table +="| ";
+            Table +="|";
             
             //insert output value
-            if(oPins.get(0).getOutput()) {
-            	Table +=  1  + "\n";
-    		}
-    		else {
-    			Table +=  0  + "\n";
-    		}
+            
+            for (int j=0; j<oPins.size(); j++)
+            {
+            	Table += " " ;
+            	if(oPins.get(j).getOutput()) {
+                  	Table +=  1  ;
+          		}
+          		else {
+          			Table +=  0  ;
+          		}
+    				
+            }
+            Table +="\n";
 
         }
         System.out.println(Table);
