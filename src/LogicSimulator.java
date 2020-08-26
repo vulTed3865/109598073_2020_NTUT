@@ -14,31 +14,27 @@ public class LogicSimulator {
 	public boolean load(String Filepath) {
 		File file = new File(Filepath);
 		Vector<String> list = new Vector<String>();
-		String[] words = null;
-		int linecount = 0;
-		
 		clearAll();
 		
 		// load and read file data
 		try {
-			if (file.isFile() && file.exists()) {
-				InputStreamReader read = new InputStreamReader(new FileInputStream(file));
-				BufferedReader bufferedReader = new BufferedReader(read);
-				String lineTxt = "";
+			InputStreamReader read = new InputStreamReader(new FileInputStream(file));
+			BufferedReader bufferedReader = new BufferedReader(read);
+			String lineTxt = "";
 
-				while ((lineTxt = bufferedReader.readLine()) != null) {
-					list.add(lineTxt); // String to Integer
-					linecount++;
-				}
-				bufferedReader.close();
-				read.close();
-				createIPins(Integer.parseInt(list.get(0)));				//		read the first line  >>get input pins number
-				createOutputCandidates(Integer.parseInt(list.get(1)));	//		read the second line >>get input pins number
+			while ((lineTxt = bufferedReader.readLine()) != null) {
+				list.add(lineTxt); // String to Integer
+			}
+			bufferedReader.close();
+			read.close();
+			createIPins(Integer.parseInt(list.get(0)));				//		read the first line  >>get input pins number
+			createOutputCandidates(Integer.parseInt(list.get(1)));	//		read the second line >>get input pins number
 	
-			}	
+	
 					
 		} catch (Exception e) {
-			System.out.println(e);
+			//System.out.println(e);
+			
 			return false;
 		}
 
@@ -77,14 +73,12 @@ public class LogicSimulator {
 		}
 			
 		
-		
-//		System.out.println("result :"+ result);
+
 		String resultgraph = 
 				"Simulation Result:\n" + 
 				"i i i | o\n" + 
 				"1 2 3 | 1\n" + 
 				"------+--\n" + result;
-		System.out.println(resultgraph);
 		return resultgraph;
 	}
 
@@ -110,7 +104,6 @@ public class LogicSimulator {
         }
 		Table += "|" ;
 
-		System.out.println(oPins.size());
         for (int i=0; i<oPins.size(); i++)
         {
         	Table += " ";
@@ -146,7 +139,6 @@ public class LogicSimulator {
     			else if (truthvalue == 0 )
     				iPins.get(currentipin).setInput(false);
     			Table += truthvalue + " ";
-    			System.out.println("currentipin : "+currentipin);
     			currentipin++;
     			
             }
@@ -168,7 +160,6 @@ public class LogicSimulator {
             Table +="\n";
 
         }
-        System.out.println(Table);	
 		return Table;
 	}
 	
@@ -222,34 +213,30 @@ public class LogicSimulator {
 				
 			for (int j = 0; j < words.length; j++) {
 				if (words[j].equals("0")) {
-					System.out.println("get 0 ,go nextline");
-					System.out.println("");
 					continue;
 				}
 
 						
 				if (words[j].indexOf('.') == -1) {
 					if (words[j].indexOf('-') != -1) { 
-						//negative
+						//negative part
 						//ex: -1 ->ipin num 1 =>index 0 of ipins 
-						System.out.println("get nega : " + words[j]);
-						int FromIpinNum = (int) Integer.parseInt(words[j]);
-						int IpinIndex = Math.abs(FromIpinNum) -1;
-						int SelectGateIndex = i-2;
-						circuits.get(SelectGateIndex).addInputPin(iPins.get(IpinIndex));
+						int fromIpinNum = (int) Integer.parseInt(words[j]);
+						int IpinIndex = Math.abs(fromIpinNum) -1;
+						int selectGateIndex = i-2;
+						circuits.get(selectGateIndex).addInputPin(iPins.get(IpinIndex));
 					}
 				} 
 				else {
-					System.out.println("get float : " + words[j]);
+					//float part 
 					//ex: 2.1 => 2 means gate 2  => index in the circuits is 2-1 = 1  
-					float FromGateNumber = (float) Float.parseFloat(words[j]);
-					int FromGNint = (int)FromGateNumber-1;
-					int selectgateindex = i-2;
+					float fromGateNumber = (float) Float.parseFloat(words[j]);
+					int fromGNint = (int)fromGateNumber-1;
+					int selectGateIndex = i-2;
 					
-					circuits.get(selectgateindex).addInputPin(circuits.get(FromGNint) ); //add other gate as input
-					System.out.println("selectgateindex: "+selectgateindex+" fromGN: "+ FromGNint );
-					String GateToBeRemoved = (int)FromGateNumber + "";
-					koGateFromOutputCandidate(GateToBeRemoved);
+					circuits.get(selectGateIndex).addInputPin(circuits.get(fromGNint) ); //add other gate as input
+					String gateToBeRemoved = (int)fromGateNumber + "";
+					koGateFromOutputCandidate(gateToBeRemoved);
 
 				}
 			}
@@ -282,14 +269,13 @@ public class LogicSimulator {
 		for (int i = 0; i < gates; i++) {
 			String Outputlist = "" + (i+1) ;
 			OutputCandidate.add(Outputlist);
-			System.out.println("show OC :" + OutputCandidate.get(i));
+//			System.out.println("show OC :" + OutputCandidate.get(i));
 		}
 
 	}
-	private void koGateFromOutputCandidate(String GateToBeRemoved) {
-		boolean found = OutputCandidate.contains(GateToBeRemoved);
-		if(found)
-			OutputCandidate.remove(GateToBeRemoved);
+	private void koGateFromOutputCandidate(String gateToBeRemoved) {
+		if(OutputCandidate.contains(gateToBeRemoved))
+			OutputCandidate.remove(gateToBeRemoved);
 	}
 	
 }

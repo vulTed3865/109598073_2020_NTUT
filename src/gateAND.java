@@ -11,7 +11,6 @@ public class gateAND extends Device{
 		for (int index = 1 ; index <IPins.size() ; index++) {
 			result = result & IPins.get(index).getOutput();
 		}
-		System.out.println("AND result" + result );
 		return result;
 	}
 	}
