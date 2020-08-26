@@ -1,11 +1,8 @@
-import java.awt.List;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Scanner;
 import java.util.Vector;
 
 public class LogicSimulator {
@@ -14,21 +11,14 @@ public class LogicSimulator {
 	private Vector<Device> oPins;
 	private Vector<String> OutputCandidate;
 	
-	public LogicSimulator() {
-		circuits = new Vector<>();
-		iPins = new Vector<>();
-		oPins = new Vector<>();
-		OutputCandidate = new Vector<>();
-	}
-	
-
-
 	public boolean load(String Filepath) {
 		File file = new File(Filepath);
 		Vector<String> list = new Vector<String>();
 		String[] words = null;
 		int linecount = 0;
-		int CountGate = 0;
+		
+		clearAll();
+		
 		// load and read file data
 		try {
 			if (file.isFile() && file.exists()) {
@@ -44,6 +34,7 @@ public class LogicSimulator {
 				read.close();
 				createIPins(Integer.parseInt(list.get(0)));				//		read the first line  >>get input pins number
 				createOutputCandidates(Integer.parseInt(list.get(1)));	//		read the second line >>get input pins number
+	
 			}	
 					
 		} catch (Exception e) {
@@ -51,139 +42,15 @@ public class LogicSimulator {
 			return false;
 		}
 
+		setGatetoCircuits(list);
+		setEachGateInputs(list);
 		
-		// parse the gatetype and generate the gate in circuit
-		for (int i = 2; i < linecount; i++) {
-			
-			words = list.get(i).split(" ");
-			switch (words[0]) {
-				case "1": //AND gate
-				circuits.add(new gateAND());
-				CountGate ++;
-					break;
-					
-				case "2": //OR gate
-				circuits.add(new gateOR());
-				CountGate ++;
-					break;
-				
-				case "3": //NOT¡@gate
-				circuits.add(new gateNOT());
-				CountGate ++;
-					break;
-			}
-		}
-
-		//parse the file data and define the pin
-		for (int i = 2; i < linecount; i++) {
-			
-			words = list.get(i).split(" ");
-			
-			for (int j = 0; j < words.length; j++) {
-			
-//					System.out.println(words[j]);
-
-					if (words[j].equals("0")) {
-						System.out.println("get 0 go nextline");
-						System.out.println("");
-						continue;
-					}
-
-					
-					if (words[j].indexOf('.') == -1) {
-						if (words[j].indexOf('-') != -1) { 
-							//negative
-							//ex: -1 ->ipin num 1 =>index 0 of ipins 
-							System.out.println("get nega : " + words[j]);
-							int fromipinnum = (int) Integer.parseInt(words[j]);
- 							int Ipinindex = Math.abs(fromipinnum) -1;
- 							int selectgateindex = i-2;
- 							circuits.get(selectgateindex).addInputPin(iPins.get(Ipinindex));
- 							System.out.println("selectgateindex: "+ selectgateindex +" Ipinindex: "+ Ipinindex );
- 							//circuits 1 gateand  -> 3 gatenot  -> 2 gate or 
-						}
-					} 
-					else {
-						System.out.println("get float : " + words[j]);
-						//ex: 2.1 => 2 means gate 2  => index in the circuits is 2-1 = 1  
-						float fromgatenumber = (float) Float.parseFloat(words[j]);
-						int fromGN = (int)fromgatenumber-1;
-						int selectgateindex = i-2;
-						
-						circuits.get(selectgateindex).addInputPin(circuits.get(fromGN) ); //add other gate as input
-						System.out.println("selectgateindex: "+selectgateindex+" fromGN: "+ fromGN );
-						
-						
-						String gateberemove = (int)fromgatenumber + "";
-						boolean found = OutputCandidate.contains(gateberemove);
-						
-						System.out.println("OutputCandidatesize : " + OutputCandidate.size() );
-						System.out.println("found : " + found + " gateberemove : " +gateberemove );
-						if(found)
-							OutputCandidate.remove(gateberemove);
-						
-						
-//						for(int k = 0 ; k < OutputCandidate.size();k++) {
-//							System.out.println("");
-//							System.out.println("the OC " + k + " ");
-//							System.out.println(OutputCandidate.get(k));
-//							System.out.println("");
-//						}
-						
-//						System.out.println("");
-						
-					}
-			}
-			
-		}
-		
-		int outputgate = Integer.parseInt(OutputCandidate.get(0));
-		int OutputCandidatenumber = OutputCandidate.size();
-		
-		createOPins(OutputCandidatenumber);
-		setOPins(OutputCandidate);
-		
-		
-//		OPin output  = new OPin();
-//		oPins.add(output);
-//		oPins.get(0).addInputPin(circuits.get(outputgate-1));
-//		System.out.println("circuits n : " + circuits.get(outputgate-1));
-//		System.out.println("oPins 0 : " + oPins.get(0));
-		
-//		 
+		createOPins(getOutputCandidateSize());
+		setOPins(OutputCandidate); 
 		return true;
 	}
 	
-	private void createIPins(int ipins) {
-		for (int i = 0; i < ipins; i++) {
-			IPin iPin = new IPin();
-			iPins.add(iPin);
-		}
-	}
-	private void createOPins(int opins) {
-		for (int i = 0; i < opins; i++) {
-			OPin oPin = new OPin();
-			oPins.add(oPin);
-		}
-	}
-	private void setOPins(Vector<String> OutputCandidate) {
-		
-		for (int i = 0; i < OutputCandidate.size(); i++) {
-			int outputgate = Integer.parseInt(OutputCandidate.get(i));
-			oPins.get(i).addInputPin(circuits.get(outputgate-1));
-		}
-		
-		
-		
-	}
-	private void createOutputCandidates(int gates) {
-		for (int i = 0; i < gates; i++) {
-			String Outputlist = "" + (i+1) ;
-			OutputCandidate.add(Outputlist);
-			System.out.println("show OC :" + OutputCandidate.get(i));
-		}
 
-	}
 	public String getSimulationResult(Vector<Boolean> inputValues) {
 		String result = "";
 
@@ -301,23 +168,128 @@ public class LogicSimulator {
             Table +="\n";
 
         }
-        System.out.println(Table);
-		    
-		
-//		assertEquals("Truth table:\n" +
-//                "i i i | o\n" +
-//                "1 2 3 | 1\n" +
-//                "------+--\n" +
-//                "0 0 0 | 0\n" +
-//                "0 0 1 | 0\n" +
-//                "0 1 0 | 0\n" +
-//                "0 1 1 | 0\n" +
-//                "1 0 0 | 1\n" +
-//                "1 0 1 | 1\n" +
-//                "1 1 0 | 0\n" +
-//                "1 1 1 | 0\n", logicSimulator.getTruthTable());
-		
-		
+        System.out.println(Table);	
 		return Table;
 	}
+	
+	public int getInputPinsSize() {
+		return iPins.size();
+	}
+	public int getOutputPinsSize() {
+		return oPins.size();
+	}
+	public int getCircuitsSize() {
+		return circuits.size();
+	}
+
+	private int getOutputCandidateSize() {
+		return OutputCandidate.size();
+	}
+	
+	private void clearAll() {
+		circuits = new Vector<>();
+		iPins = new Vector<>();
+		oPins = new Vector<>();
+		OutputCandidate = new Vector<>();
+	}
+	private void createIPins(int ipins) {
+		for (int i = 0; i < ipins; i++) {
+			IPin iPin = new IPin();
+			iPins.add(iPin);
+		}
+	}
+	private void createOPins(int opins) {
+		for (int i = 0; i < opins; i++) {
+			OPin oPin = new OPin();
+			oPins.add(oPin);
+		}
+	}
+	private void setOPins(Vector<String> OutputCandidate) {
+		
+		for (int i = 0; i < OutputCandidate.size(); i++) {
+			int outputgate = Integer.parseInt(OutputCandidate.get(i));
+			oPins.get(i).addInputPin(circuits.get(outputgate-1));
+		}
+		
+		
+		
+	}
+	private void setEachGateInputs(Vector<String> GateData) {
+		//parse the file data and define the pin
+		for (int i = 2; i < GateData.size(); i++) {
+				
+			String[] words = GateData.get(i).split(" ");
+				
+			for (int j = 0; j < words.length; j++) {
+				if (words[j].equals("0")) {
+					System.out.println("get 0 ,go nextline");
+					System.out.println("");
+					continue;
+				}
+
+						
+				if (words[j].indexOf('.') == -1) {
+					if (words[j].indexOf('-') != -1) { 
+						//negative
+						//ex: -1 ->ipin num 1 =>index 0 of ipins 
+						System.out.println("get nega : " + words[j]);
+						int FromIpinNum = (int) Integer.parseInt(words[j]);
+						int IpinIndex = Math.abs(FromIpinNum) -1;
+						int SelectGateIndex = i-2;
+						circuits.get(SelectGateIndex).addInputPin(iPins.get(IpinIndex));
+					}
+				} 
+				else {
+					System.out.println("get float : " + words[j]);
+					//ex: 2.1 => 2 means gate 2  => index in the circuits is 2-1 = 1  
+					float FromGateNumber = (float) Float.parseFloat(words[j]);
+					int FromGNint = (int)FromGateNumber-1;
+					int selectgateindex = i-2;
+					
+					circuits.get(selectgateindex).addInputPin(circuits.get(FromGNint) ); //add other gate as input
+					System.out.println("selectgateindex: "+selectgateindex+" fromGN: "+ FromGNint );
+					String GateToBeRemoved = (int)FromGateNumber + "";
+					koGateFromOutputCandidate(GateToBeRemoved);
+
+				}
+			}
+				
+		}
+		
+	}
+
+	private void setGatetoCircuits(Vector<String> GateData) {
+		// parse the gatetype and generate the gate in circuit
+		for (int i = 2; i < GateData.size(); i++) {
+			
+			String[] words = GateData.get(i).split(" ");
+			switch (words[0]) {
+				case "1": //AND gate
+				circuits.add(new gateAND());
+					break;
+					
+				case "2": //OR gate
+				circuits.add(new gateOR());
+					break;
+				
+				case "3": //NOT¡@gate
+				circuits.add(new gateNOT());
+					break;
+			}
+		}
+	}
+	private void createOutputCandidates(int gates) {
+		for (int i = 0; i < gates; i++) {
+			String Outputlist = "" + (i+1) ;
+			OutputCandidate.add(Outputlist);
+			System.out.println("show OC :" + OutputCandidate.get(i));
+		}
+
+	}
+	private void koGateFromOutputCandidate(String GateToBeRemoved) {
+		boolean found = OutputCandidate.contains(GateToBeRemoved);
+		if(found)
+			OutputCandidate.remove(GateToBeRemoved);
+	}
+	
 }
